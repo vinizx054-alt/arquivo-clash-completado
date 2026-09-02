@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clash Royale - Estrada dos Troféus</title>
+    
+    <!-- Fonte Inter importada -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Arquivo de estilos CSS -->
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="logo-box">
+            <h1>Estrada dos Troféus</h1>
+        </div>
+
+        <!-- Barra Superior com Botão Voltar e Busca em Tempo Real -->
+        <div class="top-bar">
+            <!-- Altere 'menu.html' abaixo para o nome do seu arquivo de menu principal caso seja diferente -->
+            <button class="btn-voltar" onclick="window.location.href='menu.html'">← Voltar ao Menu</button>
+            <input type="text" id="busca-arena" class="input-busca" placeholder="🔍 Buscar por arena..." oninput="filtrarArenas()">
+        </div>
+    </header>
+
+    <main class="container" id="arenas-container">
+        <!-- O JavaScript injeta as arenas aqui -->
+    </main>
+
+    <!-- Arquivo de dados das arenas -->
+    <script src="./arenas.js"></script>
+
+    <script>
+        const container = document.getElementById('arenas-container');
+
+        function renderizarArenas(lista) {
+            container.innerHTML = '';
+
+            if (lista && lista.length > 0) {
+                lista.forEach(arena => {
+                    const card = document.createElement('article');
+                    card.className = 'arena-card';
+                    
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <div class="arena-id-box">
+                                <span class="label">ARENA</span>
+                                <span class="id-number">${arena.id}</span>
+                            </div>
+                        </div>
+
+                        <div class="arena-img-container">
+                            <div class="img-glow"></div>
+                            <img class="arena-img" 
+                                 src="./imagens/${arena.id}.png" 
+                                 alt="${arena.name}" 
+                                 onerror="this.onerror=null; this.src='https://placehold.co/180x180/1c2836/ffffff?text=Arena+${arena.id}';">
+                        </div>
+                        
+                        <div class="arena-info">
+                            <div class="arena-name-box">
+                                <span class="arena-name">${arena.name}</span>
+                            </div>
+                            
+                            <div class="trophy-box">
+                                <span class="trophy-icon">🏆</span>
+                                <span class="trophy-count">${arena.min_trophies.toLocaleString('pt-BR')}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            } else {
+                container.innerHTML = `
+                    <div class="erro-box">
+                        Nenhuma arena encontrada com esse nome.
+                    </div>
+                `;
+            }
+        }
+
+        // Função para filtrar arenas em tempo real ao digitar
+        function filtrarArenas() {
+            const termo = document.getElementById('busca-arena').value.toLowerCase();
+            
+            if (typeof arenasData !== 'undefined') {
+                const arenasFiltradas = arenasData.filter(arena => 
+                    arena.name.toLowerCase().includes(termo) || 
+                    arena.id.toString().includes(termo)
+                );
+                renderizarArenas(arenasFiltradas);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof arenasData !== 'undefined') {
+                renderizarArenas(arenasData);
+            } else {
+                container.innerHTML = `
+                    <div class="erro-box">
+                        ⚠️ <strong>Erro:</strong> Os dados das arenas não foram encontrados no arquivo <code>arenas.js</code>.
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
